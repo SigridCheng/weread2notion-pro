@@ -101,30 +101,6 @@ def get_sort():
     return 0
 
 
-def download_image(url, save_dir="cover"):
-    # 确保目录存在，如果不存在则创建
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-
-    # 获取文件名，使用 URL 最后一个 '/' 之后的字符串
-    file_name = url.split("/")[-1] + ".jpg"
-    save_path = os.path.join(save_dir, file_name)
-
-    # 检查文件是否已经存在，如果存在则不进行下载
-    if os.path.exists(save_path):
-        print(f"File {file_name} already exists. Skipping download.")
-        return save_path
-
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        with open(save_path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=128):
-                file.write(chunk)
-        print(f"Image downloaded successfully to {save_path}")
-    else:
-        print(f"Failed to download image. Status code: {response.status_code}")
-    return save_path
-
 
 def sort_notes(page_id, chapter, bookmark_list):
     """对笔记进行排序"""
@@ -205,7 +181,7 @@ def append_blocks(id, contents):
         else:
             blocks.append(content_to_block(content))
             sub_contents.append(content)
-
+    
     if len(blocks) > 0:
         l.extend(append_blocks_to_notion(id, blocks, before_block_id, sub_contents))
     for index, value in enumerate(l):
@@ -263,7 +239,6 @@ if __name__ == "__main__":
     notion_helper = NotionHelper()
     notion_books = notion_helper.get_all_book()
     books = weread_api.get_notebooklist()
-    print(len(books))
     if books != None:
         for index, book in enumerate(books):
             bookId = book.get("bookId")
