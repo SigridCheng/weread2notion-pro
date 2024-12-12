@@ -32,6 +32,7 @@ jobs:
       REF: ${{ github.ref }}
       REPOSITORY: ${{ github.repository }}
       YEAR: ${{ vars.YEAR }}
+      HEATMAP_ENABLED: 'false'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,6 +50,7 @@ jobs:
         run: echo "YEAR=$(date +"%Y")" >> $GITHUB_ENV
         if: env.YEAR == ''
       - name: weread heatmap
+        if: ${{ env.HEATMAP_ENABLED != 'false' }}
         run: |
           github_heatmap weread  --year $YEAR  --me "${{secrets.NAME}}" --without-type-name --background-color=${{ vars.background_color||'#FFFFFF'}} --track-color=${{ vars.track_color||'#ACE7AE'}} --special-color1=${{ vars.special_color||'#69C16E'}} --special-color2=${{ vars.special_color2||'#549F57'}} --dom-color=${{ vars.dom_color||'#EBEDF0'}} --text-color=${{ vars.text_color||'#000000'}}
       - name: Rename weread.svg to a random name
