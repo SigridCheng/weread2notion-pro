@@ -82,24 +82,18 @@ HEATMAP_GUIDE = "https://mp.weixin.qq.com/s?__biz=MzI1OTcxOTI4NA==&mid=224748414
 notion_helper = NotionHelper()
 weread_api = WeReadApi()
 def main():
-    # 如果不生成热力图，跳过热力图相关的逻辑
-    if os.getenv('HEATMAP_ENABLED', 'false') != 'false':
-        image_file = get_file()
-        if image_file:
-            image_url = f"https://raw.githubusercontent.com/{os.getenv('REPOSITORY')}/{os.getenv('REF').split('/')[-1]}/OUT_FOLDER/{image_file}"
-            heatmap_url = f"https://heatmap.malinkang.com/?image={image_url}"
-            if notion_helper.heatmap_block_id:
-                response = notion_helper.update_heatmap(
-                    block_id=notion_helper.heatmap_block_id, url=heatmap_url
-                )
-            else:
-                print(f"更新热力图失败，没有添加热力图占位。具体参考：{HEATMAP_GUIDE}")
+    image_file = get_file()
+    if image_file:
+        image_url = f"https://raw.githubusercontent.com/{os.getenv('REPOSITORY')}/{os.getenv('REF').split('/')[-1]}/OUT_FOLDER/{image_file}"
+        heatmap_url = f"https://heatmap.malinkang.com/?image={image_url}"
+        if notion_helper.heatmap_block_id:
+            response = notion_helper.update_heatmap(
+                block_id=notion_helper.heatmap_block_id, url=heatmap_url
+            )
         else:
-            print(f"更新热力图失败，没有生成热力图。具体参考：{HEATMAP_GUIDE}")
+            print(f"更新热力图失败，没有添加热力图占位。具体参考：{HEATMAP_GUIDE}")
     else:
-        print("热力图未启用，跳过热力图生成。")
-
-    # 执行数据同步
+        print(f"更新热力图失败，没有生成热力图。具体参考：{HEATMAP_GUIDE}")
     api_data = weread_api.get_api_data()
     readTimes = {int(key): value for key, value in api_data.get("readTimes").items()}
     now = pendulum.now("Asia/Shanghai").start_of("day")
